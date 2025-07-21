@@ -10,6 +10,7 @@ provider:
   environment:
     BUCKET_NAME: ecommerce-dev-categories
     DYNAMO_TABLE: Categories
+    SNS_TOPIC_ARN: arn:aws:sns:ap-southeast-1:021891614965:CategoryCleanupTopic
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -23,6 +24,10 @@ provider:
         - dynamoDb:Scan #Added permission to Scan the table
         - dynamoDb:DeleteItem #Added permission to Delete outdated records
       Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Categories
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource: arn:aws:sns:ap-southeast-1:021891614965:CategoryCleanupTopic
 
 resources:
   Resources:
@@ -42,6 +47,18 @@ resources:
         KeySchema:
           - AttributeName: fileName
             KeyType: HASH  
+
+    CategoryCleanupTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: CategoryCleanupTopic  
+
+    CategoryCleanupSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: arn:aws:sns:ap-southeast-1:021891614965:CategoryCleanupTopic
+        Protocol: email
+        Endpoint: thuongtt@vnext.vn
 
 functions:
   getUploadUrl:
@@ -64,3 +81,8 @@ functions:
           bucket: ecommerce-dev-categories
           event: s3:ObjectCreated:Put #Trigger event when a new object is uploaded
           existing: true #ensures the function works with  an existing bucket
+  
+  cleanupCategories:
+    handler: handlers/cleanupCategories.cleanupCategories
+    events:
+      - schedule: rate(2 minutes) #Runs every 2 minutes
