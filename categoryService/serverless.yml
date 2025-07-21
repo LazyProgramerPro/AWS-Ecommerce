@@ -50,3 +50,11 @@ functions:
       - httpApi:
           path: /upload-url
           method: post
+
+  updateCategoryImage:
+    handler: handlers/updateCategoryImage.updateCategoryImage
+    events:
+      - s3:
+          bucket: ecommerce-dev-categories
+          event: s3:ObjectCreated:Put #Trigger event when a new object is uploaded
+          existing: true #ensures the function works with  an existing bucket
