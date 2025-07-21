@@ -1,0 +1,67 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: thuongtt97
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: bannerService
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  region: ap-southeast-1
+  environment:
+    BUCKET_NAME: ecommerce-dev-home 
+    DYNAMO_TABLE: Banners
+  iamRoleStatements:
+    - Effect: Allow #Grants permission
+      Action:
+        - s3:PutObject #needed to generate the pre-signed url for uploading the file
+      Resource: arn:aws:s3:::ecommerce-dev-home/*
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:Scan
+      Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Banners 
+resources:
+   Resources:
+      #//this section defines the AWS resources that will be created as part of the deployment
+      BannerImagesBucket:
+         Type: AWS::S3::Bucket #Specifies that the resource is an s3 bucket
+         Properties:
+           BucketName: ecommerce-dev-home #the unique name of the s3 bucket
+          
+      #DynamoDB Table Configuration
+      BannersTable:
+        Type: AWS::DynamoDB::Table #specifies that the resource is a  DynamoDB table
+        Properties:
+          TableName: Banners
+          BillingMode: PAY_PER_REQUEST
+          AttributeDefinitions:
+            - AttributeName: fileName
+              AttributeType: S
+          KeySchema:
+            - AttributeName: fileName
+              KeyType: HASH    
+        
+functions:
+  getUploadUrl:
+    handler: handlers/uploadBanner.getUploadUrl
+    events:
+      - httpApi:
+          path: /upload-url
+          method: post
+  getAllBanners:
+    handler: handlers/getAllBanners.getAllBanners
+    events:
+      - httpApi:
+          path: /banners
+          method: get
+
+  confirmUpload:
+    handler: handlers/confirmUpload.confirmUpload
+    events: #Defines the even triggers for this  function 
+      - s3: #specifies an s3 event trigger 
+          bucket: ecommerce-dev-home 
+          event: s3:ObjectCreated:Put #the function  is triggered 
+          #when a new object is uploaded (Put event ) to the s3 bucket
+          existing: true #ensures  the function listens to events
+          #for already existing objects in the bucket
+

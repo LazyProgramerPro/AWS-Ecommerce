@@ -1,0 +1,56 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: thuongtt97
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: authService
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  environment:
+    CLIENT_ID: ${ssm:/CLIENT_ID} # This will fetch the CLIENT_ID from AWS SSM Parameter Store
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+      Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Users # Allows access to the Users table
+resources:
+  Resources: #Defines AWS resources for the service
+    UsersTable: #Defines a DynamoDB table resource
+      Type: AWS::DynamoDB::Table #Defines a dynamodb table resource
+      Properties:
+        TableName: Users #Name of the table were users are going to be stored
+        BillingMode: PAY_PER_REQUEST #Automaticaly scales read/write capacity base on usage
+        AttributeDefinitions:
+          - AttributeName: userId #The partition key(unique identifier for each user)
+            AttributeType: S # "S" means String data type
+        KeySchema:
+          - AttributeName: userId #Defines userId as the primary  key
+            KeyType: HASH #HASH indicates its's the  partition key  
+
+functions:
+  signUp:
+    handler: handlers/signUp.signUp
+    events:
+      - httpApi:
+          path: /signUp
+          method: post
+  confirmSignUp:
+    handler: handlers/confirmSignUp.confirmSignUp
+    events:
+      - httpApi:
+          path: /confirmSignUp
+          method: post
+  signIn:
+    handler: handlers/signIn.signIn
+    events:
+      - httpApi:
+          path: /signIn
+          method: post
+  signOut:
+    handler: handlers/signOut.signOut
+    events:
+      - httpApi:
+          path: /signOut
+          method: post
