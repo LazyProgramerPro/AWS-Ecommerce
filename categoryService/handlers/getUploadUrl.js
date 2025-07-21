@@ -7,7 +7,7 @@ const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 //Creating an  S3 client instance  with the specified AWS region
 
 const s3Client = new S3Client({ region: "ap-southeast-1" });
-const dyanamoDbClient = new DynamoDBClient({ region: "ap-southeast-1" });
+const dynamoDbClient = new DynamoDBClient({ region: "ap-southeast-1" });
 
 //Lambda function to generate a pre-signed URl for S3 file  upload
 //the Url Allows clients  to securely upload a file to S3 bucket without exposting aws credentials
@@ -63,7 +63,7 @@ exports.getUploadUrl = async (event) => {
       },
     });
 
-    await dyanamoDbClient.send(putItemCommand);
+    await dynamoDbClient.send(putItemCommand);
 
     return {
       statusCode: 200,
