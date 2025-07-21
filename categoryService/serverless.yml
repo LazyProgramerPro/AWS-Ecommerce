@@ -1,0 +1,52 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: thuongtt97
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: categoryService
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  environment:
+    BUCKET_NAME: ecommerce-dev-categories
+    DYNAMO_TABLE: Categories
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject #needed to generate the pre-signed url for uploading the file
+      Resource: 
+        - arn:aws:s3:::ecommerce-dev-categories/*
+    - Effect: Allow
+      Action:
+        - dynamoDb:PutItem
+        - dynamoDb:UpdateItem #Added permission to update existing records
+        - dynamoDb:Scan #Added permission to Scan the table
+        - dynamoDb:DeleteItem #Added permission to Delete outdated records
+      Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Categories
+
+resources:
+  Resources:
+    CategoryImagesBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ecommerce-dev-categories
+
+    CategoryTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Categories
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: fileName
+            AttributeType: S
+        KeySchema:
+          - AttributeName: fileName
+            KeyType: HASH  
+
+functions:
+  getUploadUrl:
+    handler: handlers/getUploadUrl.getUploadUrl
+    events:
+      - httpApi:
+          path: /upload-url
+          method: post
