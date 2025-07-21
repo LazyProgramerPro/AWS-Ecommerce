@@ -19,7 +19,7 @@ exports.confirmUpload = async (event) => {
     const fileName = record.s3.object.key;
     //Construct the public Url  for  the uploaded  file
     const imageUrl = `https://${bucketName}.s3.amazonaws.com/${fileName}`;
-    //https://banner-images-famous-macaulay-dev-123-new.s3.ap-southeast-1.amazonaws.com/banner1.png
+    // https://ecommerce-dev-home.s3.ap-southeast-1.amazonaws.com/banner1.png
 
     //Prepare the file metedata to upload in DynamoDB
     const putItemCommand = new PutItemCommand({
