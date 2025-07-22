@@ -20,9 +20,9 @@ provider:
         - sqs:SendMessage
         - sqs:ReceiveMessage
         - sqs:DeleteMessage
-      Resource: 
-        - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders
-        - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
+      Resource:  
+        - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders # Instead of using Fn::GetAtt, you can directly specify the ARN :Fn::GetAtt: [OrdersTable, Arn] 
+        - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue # Fn::GetAtt: [OrderQueue, Arn] 
   httpApi:
     authorizers:
       myCognitoAuth: #Custom name for Cognito Authorization(used in routes)
@@ -66,5 +66,6 @@ functions:
     handler: handlers/processOrder.processOrder
     events:
       - sqs:
-          arn: arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
+          arn:
+            Fn::GetAtt: [OrderQueue, Arn] # arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
 
