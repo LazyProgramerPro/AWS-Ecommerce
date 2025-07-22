@@ -9,6 +9,7 @@ provider:
   region: ap-southeast-1
   environment:
     DYNAMO_TABLE: Orders
+    SQS_QUEUE_URL: https://sqs.ap-southeast-1.amazonaws.com/021891614965/OrderQueue
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -31,7 +32,7 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-            
+
     OrderQueue:
       Type: AWS::SQS::Queue
       Properties:
