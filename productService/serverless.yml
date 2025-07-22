@@ -82,6 +82,6 @@ functions:
     handler: handlers/updateProductImage.updateProductImage
     events:
       - s3:
-          bucket: product-images-famous-macaulay-12340
+          bucket: ecommerce-dev-products
           event: s3:ObjectCreated:Put #Trigger event when a new object is uplaod
           existing: true #ensures the function works with  an existing bucket
