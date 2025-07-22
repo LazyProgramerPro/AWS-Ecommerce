@@ -2,7 +2,7 @@ const {
   DynamoDBClient,
   UpdateItemCommand,
 } = require("@aws-sdk/client-dynamodb");
-const { sendOrderEmail } = require("../services/sendEmail");
+// const { sendOrderEmail } = require("../services/sendEmail");
 
 const client = new DynamoDBClient({ region: "ap-southeast-1" });
 
@@ -26,13 +26,13 @@ exports.handler = async (event) => {
       })
     );
     //Send an order confirmation email to the user using AWS SES
-    await sendOrderEmail(
-      email,
-      id,
-      product.productName?.S || "Unknown Product", //fallback if product name is missing
-      quantity,
-      `${product.productName?.S} now shipping`
-    );
+    // await sendOrderEmail(
+    //   email,
+    //   id,
+    //   product.productName?.S || "Unknown Product", //fallback if product name is missing
+    //   quantity,
+    //   `${product.productName?.S} now shipping`
+    // );
     return {
       statusCode: 200,
       body: JSON.stringify({

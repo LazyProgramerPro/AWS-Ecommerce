@@ -1,10 +1,10 @@
 const { SQSClient, SendMessageCommand } = require("@aws-sdk/client-sqs");
 const axios = require("axios");
-// const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
+const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
 const { v4: uuid } = require("uuid");
 // const { sendOrderEmail } = require("../services/sendEmail");
 const sqsClient = new SQSClient({ region: "ap-southeast-1" });
-// const sfnClient = new SFNClient({ region: "ap-southeast-1" });
+const sfnClient = new SFNClient({ region: "ap-southeast-1" });
 
 exports.placeOrder = async (event) => {
   try {
@@ -60,12 +60,12 @@ exports.placeOrder = async (event) => {
     //This will tell AWS to start running your Step function(state machine) using the orderPayload
     //as the input
 
-    // await sfnClient.send(
-    //   new StartExecutionCommand({
-    //     stateMachineArn: process.env.STEP_FUNCTION_ARN,
-    //     input: JSON.stringify({ ...orderPayload, product }),
-    //   })
-    // );
+    await sfnClient.send(
+      new StartExecutionCommand({
+        stateMachineArn: process.env.STEP_FUNCTION_ARN,
+        input: JSON.stringify({ ...orderPayload, product }),
+      })
+    );
     //Send an order confirmation email to the user using AWS SES
     // await sendOrderEmail(
     //   email,

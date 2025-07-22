@@ -13,6 +13,7 @@ provider:
   environment:
     DYNAMO_TABLE: Orders
     SQS_QUEUE_URL: https://sqs.ap-southeast-1.amazonaws.com/021891614965/OrderQueue
+    STEP_FUNCTION_ARN: arn:aws:states:ap-southeast-1:021891614965:stateMachine:OrderProcessingStateMachine
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -23,9 +24,12 @@ provider:
         - sqs:SendMessage
         - sqs:ReceiveMessage
         - sqs:DeleteMessage
+        - states:StartExecution
+        # - ses:SendEmail
       Resource:  
         - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders # Instead of using Fn::GetAtt, you can directly specify the ARN :Fn::GetAtt: [OrdersTable, Arn] 
         - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue # Fn::GetAtt: [OrderQueue, Arn] 
+        - arn:aws:states:ap-southeast-1:021891614965:stateMachine:OrderProcessingStateMachine # Fn::GetAtt: [OrderProcessingStateMachine, Arn]
   httpApi:
     authorizers:
       myCognitoAuth: #Custom name for Cognito Authorization(used in routes)
@@ -59,6 +63,8 @@ resources:
 functions:
   placeOrder:
     handler: handlers/placeOrder.placeOrder
+    STEP_FUNCTION_ARN: 
+      Ref: OrderProcessingStateMachine #Reference to the Step Function ARN
     events:
       - httpApi:
           path: /create-order
@@ -87,9 +93,9 @@ stepFunctions: #Start defining Step Functions
           UpdateStatusToProcessing:
             Type: Task
             Resource:
-              Fn::GetAtt: [updateOrderStatus, Arn] #Invoke the Lambda function to update order status to "Processing"
+              Fn::GetAtt: [updateOrderStatus, Arn]
             Next: NotifyUser
           NotifyUser:
             Type: Pass #This is dummy/pass-through step  (does noting, usefull)  
             Result: "User Notified"
-            End: true #End of the state machine execution
+            End: true #Marks the end of the state machine   
