@@ -55,7 +55,7 @@ resources:
 
 functions:
   placeOrder:
-    handler: handler/placeOrder.placeOrder
+    handler: handlers/placeOrder.placeOrder
     events:
       - httpApi:
           path: /create-order
@@ -63,7 +63,7 @@ functions:
           authorizer:
             name: myCognitoAuth
   processOrder:
-    handler: handler/processOrder.processOrder
+    handler: handlers/processOrder.processOrder
     events:
       - sqs:
           arn: arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue

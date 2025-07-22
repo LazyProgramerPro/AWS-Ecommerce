@@ -1,6 +1,6 @@
 //Import necessary AWS SDK modules for interacting with DynamoDb
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
-const { sendOrderEmail } = require("../services/sendEmail");
+// const { sendOrderEmail } = require("../services/sendEmail");
 
 //Initialize a dynamodb client with our AWS Region
 const dynamoDbClient = new DynamoDBClient({ region: "ap-southeast-1" });
