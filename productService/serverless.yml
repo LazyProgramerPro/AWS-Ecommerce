@@ -45,5 +45,13 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-
-
+            
+functions:
+  getUploadUrl:
+    handler: handlers/getUploadUrl.getUploadUrl
+    events:
+      - httpApi:
+          path: /get-upload-url
+          method: post
+          authorizer:
+            name: myCognitoAuth
