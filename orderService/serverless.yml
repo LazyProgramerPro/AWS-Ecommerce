@@ -25,11 +25,12 @@ provider:
         - sqs:ReceiveMessage
         - sqs:DeleteMessage
         - states:StartExecution
-        # - ses:SendEmail
+        - ses:SendEmail
       Resource:  
         - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders # Instead of using Fn::GetAtt, you can directly specify the ARN :Fn::GetAtt: [OrdersTable, Arn] 
         - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue # Fn::GetAtt: [OrderQueue, Arn] 
         - arn:aws:states:ap-southeast-1:021891614965:stateMachine:OrderProcessingStateMachine # Fn::GetAtt: [OrderProcessingStateMachine, Arn]
+        - arn:aws:ses:ap-southeast-1:021891614965:identity/thuongtt@vnext.vn # SES identity ARN (replace with your actual SES identity ARN)
   httpApi:
     authorizers:
       myCognitoAuth: #Custom name for Cognito Authorization(used in routes)

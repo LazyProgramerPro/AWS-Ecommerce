@@ -2,7 +2,7 @@ const { SQSClient, SendMessageCommand } = require("@aws-sdk/client-sqs");
 const axios = require("axios");
 const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
 const { v4: uuid } = require("uuid");
-// const { sendOrderEmail } = require("../services/sendEmail");
+const { sendOrderEmail } = require("../services/sendEmail");
 const sqsClient = new SQSClient({ region: "ap-southeast-1" });
 const sfnClient = new SFNClient({ region: "ap-southeast-1" });
 
@@ -67,13 +67,13 @@ exports.placeOrder = async (event) => {
       })
     );
     //Send an order confirmation email to the user using AWS SES
-    // await sendOrderEmail(
-    //   email,
-    //   orderId,
-    //   product.productName?.S || "Unknown Product", //fallback if product name is missing
-    //   quantity,
-    //   "we will notify you when it is shipped"
-    // );
+    await sendOrderEmail(
+      email,
+      orderId,
+      product.productName?.S || "Unknown Product", //fallback if product name is missing
+      quantity,
+      "we will notify you when it is shipped"
+    );
     return {
       statusCode: 201,
       body: JSON.stringify({
