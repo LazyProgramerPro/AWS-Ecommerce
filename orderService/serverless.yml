@@ -3,6 +3,9 @@ org: thuongtt97
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: orderService
 
+plugins:
+  - serverless-step-functions
+
 provider:
   name: aws
   runtime: nodejs20.x
@@ -69,3 +72,24 @@ functions:
           arn:
             Fn::GetAtt: [OrderQueue, Arn] # arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
 
+  updateOrderStatus:
+    handler: handlers/updateOrderStatus.handler
+
+
+stepFunctions: #Start defining Step Functions
+  stateMachines: #Define list of state machines
+    OrderProcessingStateMachine: #this is the name of your state  machine
+      name: OrderProcessingStateMachine  #AWS name for the Step Function
+      definition: #The actual structure (state transitions) of the step function
+        Comment: "Order processing with status update" #Just a comment to describe what this state machine does
+        StartAt: UpdateStatusToProcessing
+        States: 
+          UpdateStatusToProcessing:
+            Type: Task
+            Resource:
+              Fn::GetAtt: [updateOrderStatus, Arn] #Invoke the Lambda function to update order status to "Processing"
+            Next: NotifyUser
+          NotifyUser:
+            Type: Pass #This is dummy/pass-through step  (does noting, usefull)  
+            Result: "User Notified"
+            End: true #End of the state machine execution
