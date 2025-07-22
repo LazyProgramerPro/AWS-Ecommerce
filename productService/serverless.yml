@@ -10,6 +10,7 @@ provider:
   environment:
     BUCKET_NAME: ecommerce-dev-products
     DYNAMO_TABLE: Products
+    SNS_TOPIC_ARN: arn:aws:sns:ap-southeast-1:021891614965:ProductCleanupTopic
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -22,10 +23,10 @@ provider:
         - dynamoDb:Scan
         - dynamoDb:DeleteItem
       Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Products
-    # - Effect: Allow
-    #   Action:
-    #     - sns:Publish
-    #   Resource: arn:aws:sns:ap-southeast-1:021891614965:ProductCleanupTopic
+    - Effect: Allow
+      Action:
+        - sns:Publish
+      Resource: arn:aws:sns:ap-southeast-1:021891614965:ProductCleanupTopic
       
   httpApi:
     authorizers:
@@ -77,3 +78,10 @@ functions:
           method: post
           authorizer:
             name: myCognitoAuth
+  updateProductImage:
+    handler: handlers/updateProductImage.updateProductImage
+    events:
+      - s3:
+          bucket: product-images-famous-macaulay-12340
+          event: s3:ObjectCreated:Put #Trigger event when a new object is uplaod
+          existing: true #ensures the function works with  an existing bucket

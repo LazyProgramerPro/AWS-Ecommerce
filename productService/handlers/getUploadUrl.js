@@ -19,13 +19,38 @@ exports.getUploadUrl = async (event) => {
     //The bucket where the file will be uploaded
     const bucketName = process.env.BUCKET_NAME;
 
-    //Extract email from Cognito JWT Claims
+    //Validate event structure
+    if (!event.requestContext || !event.requestContext.authorizer || !event.requestContext.authorizer.jwt || !event.requestContext.authorizer.jwt.claims) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ error: "Invalid authorization context" }),
+      };
+    }
 
+    //Extract email from Cognito JWT Claims
     const email = event.requestContext.authorizer.jwt.claims.email;
+
+    //Validate event body exists
+    if (!event.body) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Request body is required" }),
+      };
+    }
 
     //Parsing the incomming event body to get fileName and fileType
     //FileName: name of the file to  be uploaded
     //FileType: Mime type of the file example png/jpg/jpeg
+
+    let parsedBody;
+    try {
+      parsedBody = JSON.parse(event.body);
+    } catch (parseError) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Invalid JSON in request body" }),
+      };
+    }
 
     const {
       fileName,
@@ -35,7 +60,7 @@ exports.getUploadUrl = async (event) => {
       description,
       quantity,
       category,
-    } = JSON.parse(event.body);
+    } = parsedBody;
 
     //Validating that both fileName and fileType are provided
     //if either is missing , return a 400 bad request
