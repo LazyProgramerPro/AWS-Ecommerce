@@ -30,7 +30,12 @@ resources:
             AttributeType: S
         KeySchema:
           - AttributeName: id
-            KeyType: HASH   
+            KeyType: HASH
+            
+    OrderQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: OrderQueue     
 
 functions:
   hello:
