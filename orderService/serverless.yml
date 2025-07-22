@@ -17,7 +17,12 @@ provider:
         - dynamodb:GetItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders
+        - sqs:SendMessage
+        - sqs:ReceiveMessage
+        - sqs:DeleteMessage
+      Resource: 
+        - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders
+        - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
 
 resources:
   Resources:
