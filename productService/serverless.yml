@@ -21,7 +21,7 @@ provider:
       myCognitoAuth: #Custom name for Cognito Authorization(used in routes)
         identitySource: $request.header.Authorization #Extract JWT token from Authorization
         #header (used for validation)
-        issuerUrl: https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_Kx65YKYXy/.well-known/jwks.json
+        issuerUrl: https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_Kx65YKYXy
         #Url of your Cognito user pool(Needed to  verify tokens).
         audience:
           - 19pg1k8ns62j50bvnjn8blfcqf
@@ -45,7 +45,7 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-            
+
 functions:
   getUploadUrl:
     handler: handlers/getUploadUrl.getUploadUrl
