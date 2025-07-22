@@ -23,6 +23,16 @@ provider:
       Resource: 
         - arn:aws:dynamodb:ap-southeast-1:021891614965:table/Orders
         - arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
+  httpApi:
+    authorizers:
+      myCognitoAuth: #Custom name for Cognito Authorization(used in routes)
+        identitySource: $request.header.Authorization #Extract JWT token from Authorization
+        #header (used for validation)
+        issuerUrl: https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_Kx65YKYXy
+        #Url of your Cognito user pool(Needed to  verify tokens).
+        audience:
+          - 19pg1k8ns62j50bvnjn8blfcqf
+          #Cognito App client ID(ensures tokens come from the right app).
 
 resources:
   Resources:
@@ -44,9 +54,17 @@ resources:
         QueueName: OrderQueue     
 
 functions:
-  hello:
-    handler: handler.hello
+  placeOrder:
+    handler: handler/placeOrder.placeOrder
     events:
       - httpApi:
-          path: /
-          method: get
+          path: /create-order
+          method: post
+          authorizer:
+            name: myCognitoAuth
+  processOrder:
+    handler: handler/processOrder.processOrder
+    events:
+      - sqs:
+          arn: arn:aws:sqs:ap-southeast-1:021891614965:OrderQueue
+
