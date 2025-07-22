@@ -91,7 +91,7 @@ exports.getUploadUrl = async (event) => {
       },
     });
 
-    await dyanamoDbClient.send(putItemCommand);
+    await dynamoDbClient.send(putItemCommand);
 
     return {
       statusCode: 200,
