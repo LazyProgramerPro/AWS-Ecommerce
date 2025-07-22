@@ -15,6 +15,17 @@ provider:
       Action:
         - s3:PutObject
       Resource: arn:aws:s3:::ecommerce-dev-products/*
+    - Effect: Allow
+      Action:
+        - dynamoDb:PutItem
+        - dynamoDb:UpdateItem
+        - dynamoDb:Scan
+        - dynamoDb:DeleteItem
+      Resource: arn:aws:dynamodb:ap-southeast-1:021891614965:table/Products
+    # - Effect: Allow
+    #   Action:
+    #     - sns:Publish
+    #   Resource: arn:aws:sns:ap-southeast-1:021891614965:ProductCleanupTopic
       
   httpApi:
     authorizers:
@@ -45,6 +56,10 @@ resources:
         KeySchema:
           - AttributeName: id
             KeyType: HASH
+    ProductCleanupTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: ProductCleanupTopic  
 
 functions:
   getUploadUrl:
