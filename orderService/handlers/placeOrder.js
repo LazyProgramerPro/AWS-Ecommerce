@@ -3,8 +3,8 @@ const axios = require("axios");
 // const { SFNClient, StartExecutionCommand } = require("@aws-sdk/client-sfn");
 const { v4: uuid } = require("uuid");
 // const { sendOrderEmail } = require("../services/sendEmail");
-const sqsClient = new SQSClient({ region: "us-east-1" });
-// const sfnClient = new SFNClient({ region: "us-east-1" });
+const sqsClient = new SQSClient({ region: "ap-southeast-1" });
+// const sfnClient = new SFNClient({ region: "ap-southeast-1" });
 
 exports.placeOrder = async (event) => {
   try {
