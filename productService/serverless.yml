@@ -61,6 +61,13 @@ resources:
       Properties:
         TopicName: ProductCleanupTopic  
 
+    ProductCleanupSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        TopicArn: arn:aws:sns:ap-southeast-1:021891614965:ProductCleanupTopic
+        Protocol: email
+        Endpoint: thuongtt@vnext.vn
+
 functions:
   getUploadUrl:
     handler: handlers/getUploadUrl.getUploadUrl
