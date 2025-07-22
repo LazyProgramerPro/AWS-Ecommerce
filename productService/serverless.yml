@@ -85,3 +85,7 @@ functions:
           bucket: ecommerce-dev-products
           event: s3:ObjectCreated:Put #Trigger event when a new object is uplaod
           existing: true #ensures the function works with  an existing bucket
+  cleanupProducts:
+    handler: handlers/cleanupProducts.cleanupProducts
+    events:
+      - schedule: rate(2 minutes) #Runs every 2 minutes 
